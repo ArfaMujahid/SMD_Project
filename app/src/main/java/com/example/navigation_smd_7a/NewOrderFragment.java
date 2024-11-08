@@ -22,6 +22,9 @@ import java.util.ArrayList;
 public class NewOrderFragment extends Fragment {
 
     Context context;
+    private ProductAdapter adapter;
+    private ArrayList<Product> products;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -43,7 +46,8 @@ public class NewOrderFragment extends Fragment {
 
 
 
-    /**
+    /**\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+     *
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
@@ -83,10 +87,92 @@ public class NewOrderFragment extends Fragment {
         ListView lvNewOrderList = view.findViewById(R.id.lvNewOrdersList);
         ProductDB productDB = new ProductDB(context);
         productDB.open();
-        ArrayList<Product> products = productDB.fetchProducts();
+        products = productDB.fetchProducts();
         productDB.close();
 
         ProductAdapter adapter = new ProductAdapter(context, R.layout.product_item_design, products);
         lvNewOrderList.setAdapter(adapter);
+
+    }
+
+    public void refreshProductList() {
+        ProductDB productDB = new ProductDB(context);
+        productDB.open();
+        products = productDB.fetchProducts();
+        productDB.close();
+        adapter.notifyDataSetChanged();
     }
 }
+
+//
+//////////////////////////////////////////////
+//2. Send Data from NewOrderFragment to Another Fragment in MainActivity
+//To send data to another fragment within the same activity (like MainActivity), you can use FragmentManager and pass data via Bundle.
+//
+//In NewOrderFragment
+//
+//// Send data to another fragment in MainActivity
+//Bundle bundle = new Bundle();
+//bundle.putSerializable("productList", updatedProductList); // Assuming Product implements Serializable
+//bundle.putString("stringData", someStringData);
+//
+//OtherFragment otherFragment = new OtherFragment();
+//otherFragment.setArguments(bundle);
+//
+//getParentFragmentManager()
+//    .beginTransaction()
+//    .replace(R.id.fragment_container, otherFragment)
+//    .addToBackStack(null)
+//    .commit();
+//In OtherFragment
+//Retrieve the data in onCreate or onViewCreated:
+//
+//java
+//Copy code
+//// Inside OtherFragment
+//@Override
+//public void onCreate(Bundle savedInstanceState) {
+//    super.onCreate(savedInstanceState);
+//    if (getArguments() != null) {
+//        ArrayList<Product> productList = (ArrayList<Product>) getArguments().getSerializable("productList");
+//        String stringData = getArguments().getString("stringData");
+//    }
+//}
+//3. Send Data from NewOrderFragment to a Fragment in Another Activity
+//To send data from a fragment in one activity to a fragment in another activity, you can use Intent to pass data from MainActivity to the target activity, which will then send it to the fragment in that activity.
+//
+//        In NewOrderFragment
+//Start the other activity and add data to the Intent:
+//
+//java
+//Copy code
+//// Send data to another activity
+//Intent intent = new Intent(getActivity(), OtherActivity.class);
+//intent.putExtra("productList", updatedProductList);
+//intent.putExtra("stringData", someStringData);
+//startActivity(intent);
+//In OtherActivity
+//Receive the data and pass it to the target fragment:
+//
+//java
+//Copy code
+//// Inside OtherActivity
+//@Override
+//protected void onCreate(Bundle savedInstanceState) {
+//    super.onCreate(savedInstanceState);
+//    setContentView(R.layout.activity_other);
+//
+//    ArrayList<Product> productList = (ArrayList<Product>) getIntent().getSerializableExtra("productList");
+//    String stringData = getIntent().getStringExtra("stringData");
+//
+//    OtherFragment otherFragment = new OtherFragment();
+//    Bundle bundle = new Bundle();
+//    bundle.putSerializable("productList", productList);
+//    bundle.putString("stringData", stringData);
+//    otherFragment.setArguments(bundle);
+//
+//    getSupportFragmentManager()
+//            .beginTransaction()
+//            .replace(R.id.fragment_container, otherFragment)
+//            .commit();
+//}

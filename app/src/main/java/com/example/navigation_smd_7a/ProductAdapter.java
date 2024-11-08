@@ -1,12 +1,19 @@
 package com.example.navigation_smd_7a;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
@@ -39,7 +46,38 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         ivEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+                dialog.setTitle("Edit Product");
 
+                View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_product, null);
+                dialog.setView(dialogView);
+
+                EditText etTitle = dialogView.findViewById(R.id.etEditTitle);
+                EditText etPrice = dialogView.findViewById(R.id.etEditPrice);
+
+                etTitle.setText(p.getTitle());
+                etPrice.setText(String.valueOf(p.getPrice()));
+
+                dialog.setPositiveButton("Save", (dialogInterface, i) -> {
+                    String title = etTitle.getText().toString().trim();
+                    int price = Integer.parseInt(etPrice.getText().toString().trim());
+
+                    ProductDB productDB = new ProductDB(context);
+                    productDB.open();
+                    productDB.updatePrice(p.getId(), price);
+                    productDB.close();
+
+                    p.setTitle(title);
+                    p.setPrice(price);
+
+                    notifyDataSetChanged();
+
+                    Toast.makeText(context, "Product Updated", Toast.LENGTH_SHORT).show();
+                });
+
+                dialog.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
+
+                dialog.show();
             }
         });
         ivDelete.setOnClickListener(new View.OnClickListener() {
@@ -55,8 +93,5 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         });
 
         return v;
-
-
-
     }
 }

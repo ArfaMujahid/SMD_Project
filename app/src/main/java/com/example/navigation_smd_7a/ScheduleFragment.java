@@ -7,6 +7,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,7 +61,19 @@ public class ScheduleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_schedule, container, false);
+        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
+
+        ListView listView = view.findViewById(R.id.productListView);
+        ProductDB productDB = new ProductDB(getContext());
+        productDB.open();
+
+        ArrayList<Product> scheduledProducts = productDB.fetchProductsWithStatus("new");
+        productDB.close();
+        ScheduleAdapter adapter = new ScheduleAdapter(getContext(), scheduledProducts);
+        listView.setAdapter(adapter);
+
+        return view;
     }
+
+
 }
