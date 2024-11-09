@@ -90,9 +90,24 @@ public class NewOrderFragment extends Fragment {
         products = productDB.fetchProducts();
         productDB.close();
 
-        ProductAdapter adapter = new ProductAdapter(context, R.layout.product_item_design, products);
+        adapter = new ProductAdapter(context, R.layout.product_item_design, products);
         lvNewOrderList.setAdapter(adapter);
 
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ProductDB productDB = new ProductDB(getContext());
+        productDB.open();
+
+        ArrayList<Product> updatedProducts = productDB.fetchProducts();
+        productDB.close();
+
+        products.clear();
+        products.addAll(updatedProducts);
+        adapter.notifyDataSetChanged();
     }
 
     public void refreshProductList() {

@@ -27,6 +27,9 @@ public class ScheduleFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    ScheduleAdapter adapter;
+    private ArrayList<Product> products;
+
     public ScheduleFragment() {
         // Required empty public constructor
     }
@@ -67,13 +70,26 @@ public class ScheduleFragment extends Fragment {
         ProductDB productDB = new ProductDB(getContext());
         productDB.open();
 
-        ArrayList<Product> scheduledProducts = productDB.fetchProductsWithStatus("new");
+        products = productDB.fetchProductsWithStatus("new");
         productDB.close();
-        ScheduleAdapter adapter = new ScheduleAdapter(getContext(), scheduledProducts);
+        adapter = new ScheduleAdapter(getContext(), products);
         listView.setAdapter(adapter);
 
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ProductDB productDB = new ProductDB(getContext());
+        productDB.open();
+
+        ArrayList<Product> updatedProducts = productDB.fetchProductsWithStatus("new");
+        productDB.close();
+
+        products.clear();
+        products.addAll(updatedProducts);
+        adapter.notifyDataSetChanged();
+    }
 
 }

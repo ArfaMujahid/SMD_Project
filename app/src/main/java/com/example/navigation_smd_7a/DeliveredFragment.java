@@ -40,6 +40,10 @@ public class DeliveredFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+
+    private DeliveredAdapter deliveredAdapter;
+    private ArrayList<Product> products;
+
     public DeliveredFragment() {
         // Required empty public constructor
     }
@@ -80,12 +84,27 @@ public class DeliveredFragment extends Fragment {
         ProductDB productDB = new ProductDB(getContext());
         productDB.open();
 
-        ArrayList<Product> scheduledProducts = productDB.fetchProductsWithStatus("delivered");
+        products = productDB.fetchProductsWithStatus("delivered");
         productDB.close();
-        ScheduleAdapter adapter = new ScheduleAdapter(getContext(), scheduledProducts);
-        listView.setAdapter(adapter);
+
+        deliveredAdapter = new DeliveredAdapter(getContext(), products);
+        listView.setAdapter(deliveredAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ProductDB productDB = new ProductDB(getContext());
+        productDB.open();
+
+        ArrayList<Product> updatedProducts = productDB.fetchProductsWithStatus("delivered");
+        productDB.close();
+
+        products.clear();
+        products.addAll(updatedProducts);
+        deliveredAdapter.notifyDataSetChanged();
     }
 
 }

@@ -75,10 +75,10 @@ public class MainActivity extends AppCompatActivity {
                         productDB.close();
                         Toast.makeText(MainActivity.this, "Product Added", Toast.LENGTH_SHORT).show();
 
-//                        NewOrderFragment fragment = (NewOrderFragment) getSupportFragmentManager().findFragmentByTag("f" + 3);
-//                        if (fragment != null) {
-//                            fragment.refreshProductList();
-//                        }
+                        NewOrderFragment fragment = (NewOrderFragment) getSupportFragmentManager().findFragmentByTag("f" + 3);
+                        if (fragment != null) {
+                            fragment.refreshProductList();
+                        }
                     }
                 });
 
